@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetBox Ansible Terraform Automation Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #2a2a2a;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        section {
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2a2a2a;
+        }
+        pre {
+            background-color: #282c34;
+            color: #f8f8f2;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 1.1em;
+            line-height: 1.5;
+            position: relative;
+        }
+        pre code {
+            white-space: pre-wrap;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #4e9af1;
+        }
+        .copy-btn:hover {
+            color: #357ab7;
+        }
+        a {
+            color: #4e9af1;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .note {
+            background-color: #fffbcc;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #f1c232;
+            margin-top: 20px;
+        }
+        .nav-link {
+            background-color: #4e9af1;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+        .nav-link:hover {
+            background-color: #357ab7;
+        }
+    </style>
+    <!-- FontAwesome for copy icon -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <h1>NetBox Setup and Configuration Guide</h1>
+    <p>Follow these steps to set up and configure NetBox for network automation.</p>
+</header>
+
+<section>
+    <h2>Step 1: Install Dependencies</h2>
+    <pre><code>pip install ansible
+pip install netbox</code>
+        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+    </pre>
+
+    <h2>Step 2: Set Environment Variables</h2>
+    <pre><code>export NETBOX_TOKEN=0415344f379c25ce5d9bb92ac1ea98c5c45789dc
+export NETBOX_API=http://127.0.0.1:8000</code>
+        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+    </pre>
+
+    <h2>Step 3: Learn About NetBox and Ansible Integration</h2>
+    <p>Read more about integrating NetBox with Ansible for network automation on the following blog:</p>
+    <a href="https://netboxlabs.com/blog/getting-started-with-network-automation-netbox-ansible/" target="_blank">Getting Started with Network Automation: NetBox & Ansible</a>
+
+    <h2>Step 4: Import Demo Data into SQL Database</h2>
+    <p>To populate your NetBox instance with demo data, follow the instructions below:</p>
+    <pre><code># Step 1: Drop the existing database
+docker exec -it netbox_postgres bash -c "PGPASSWORD=netbox psql -U netbox -d postgres -c 'DROP DATABASE netbox;'"
+
+# Step 2: Create a new database
+docker exec -it netbox_postgres bash -c "PGPASSWORD=netbox psql -U netbox -d postgres -c 'CREATE DATABASE netbox;'"
+
+# Step 3: Import the demo data from the SQL file
+docker run -it --rm \
+  --network container:netbox_postgres \
+  -v $(pwd)/netbox-demo-v4.2.sql:/netbox-demo.sql \
+  postgres:15 \
+  bash -c "PGPASSWORD=netbox psql -h localhost -U netbox -d netbox < /netbox-demo.sql"</code>
+        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+    </pre>
+
+    <h2>Step 5: SQL Demo Data Repository</h2>
+    <p>You can download the demo data from the official GitHub repository:</p>
+    <a href="https://github.com/netbox-community/netbox-demo-data" target="_blank">NetBox Demo Data Repository</a>
+
+    <div class="note">
+        <h3>Note:</h3>
+        <p>Ensure that your Docker containers are running and that the environment variables are correctly set before starting the setup process.</p>
+    </div>
+
+    <!-- Navigation Link to Configuration Page -->
+    <a href="configuration.html" class="nav-link">View Additional Configuration Files</a>
+</section>
+
+<script>
+    function copyCode(button) {
+        const code = button.previousElementSibling.textContent;
+        navigator.clipboard.writeText(code);
+    }
+</script>
+
+</body>
+</html>

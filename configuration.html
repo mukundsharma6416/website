@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Files</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #2a2a2a;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        section {
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2a2a2a;
+        }
+        pre {
+            background-color: #282c34;
+            color: #f8f8f2;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 1.1em;
+            line-height: 1.5;
+            position: relative;
+        }
+        pre code {
+            white-space: pre-wrap;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #4e9af1;
+        }
+        .copy-btn:hover {
+            color: #357ab7;
+        }
+        a {
+            color: #4e9af1;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .back-link {
+            display: inline-block;
+            background-color: #4e9af1;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            background-color: #357ab7;
+        }
+    </style>
+    <!-- FontAwesome for copy icon -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <h1>Configuration Files</h1>
+    <p>Below are the necessary configuration files for setting up NetBox.</p>
+</header>
+
+<section>
+    <h2>ansible.cfg</h2>
+    <pre><code>[defaults]
+inventory = inventory.yml</code>
+        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+    </pre>
+
+    <h2>inventory.yml</h2>
+    <pre><code>---
+plugin: netbox.netbox.nb_inventory
+validate_certs: false
+config_context: false
+group by: 
+  - site
+  - role
+  - manufacturer</code>
+        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+    </pre>
+
+    <h2>docker-compose.yml</h2>
+    <pre><code>version: '3.4'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: netbox_postgres
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_DB: netbox
+      POSTGRES_USER: netbox
+      POSTGRES_PASSWORD: netbox
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: netbox_redis
+    restart: unless-stopped
+
+  netbox:
+    image: netboxcommunity/netbox:latest
+    container_name: netbox
+    depends_on:
+      - postgres
+      - redis
+    env_file: .env
+    environment:
+      - ALLOWED_HOSTS=*
+      - DB_NAME=netbox
+      - DB_USER=netbox
+      - DB_PASSWORD=netbox
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - REDIS_HOST=netbox_redis  
+      - REDIS_PORT=6379  
+      - SECRET_KEY:"fowefnqfoihfowpfehfqowfoewkdna59213879foiwejfefasl"  
+    ports:
+      - "8000:8080"
+    volumes:
+      - netbox_media:/opt/netbox/netbox/media
+      - netbox_reports:/opt/netbox/netbox/reports
+      - netbox_scripts:/opt/netbox/netbox/scripts
+    restart: unless-stopped
+
+  worker:
+    image: netboxcommunity/netbox:latest
+    container_name: netbox_worker
+    depends_on:
+      - netbox
+    entrypoint: /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py rqworker
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  netbox_media:
+  netbox_reports:
+  netbox_scripts:</code>
+        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+    </pre>
+
+    <h2>.env</h2>
+    <pre><code>POSTGRES_DB=netbox
+POSTGRES_USER=netbox
+POSTGRES_PASSWORD=netbox
+ALLOWED_HOSTS=*
+DB_NAME=netbox
+DB_USER=netbox
+DB_PASSWORD=netbox
+DB_HOST=postgres
+DB_PORT=5432
+SECRET_KEY=fowefnqfoihfowpfehfqowfoewkdna59213879foiwejfefasl</code>
+        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+    </pre>
+
+    <a href="index.html" class="back-link">Back to Setup Guide</a>
+</section>
+
+<script>
+    function copyCode(button) {
+        const code = button.previousElementSibling.textContent;
+        navigator.clipboard.writeText(code);
+    }
+</script>
+
+</body>
+</html>
